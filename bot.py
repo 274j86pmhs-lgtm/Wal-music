@@ -3,7 +3,6 @@ import discord
 from discord.ext import commands
 import wavelink
 
-
 class MusicControlView(discord.ui.View):
     def __init__(self, player):
         super().__init__(timeout=None)
@@ -29,39 +28,28 @@ class MusicControlView(discord.ui.View):
     async def stop_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         if self.player:
             await self.player.stop()
-            await interaction.response.send_message("تم إيقاف البوت وخروجه ⏹️", ephemeral=True)
             await interaction.message.delete()
+            await interaction.response.send_message("تم إيقاف البوت وخروجه ⏹️", ephemeral=True)
         else:
             await interaction.response.send_message("البوت ليس في حالة تشغيل حالياً.", ephemeral=True)
 
     @discord.ui.button(style=discord.ButtonStyle.danger, emoji="❤️")
     async def fav_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await interaction.response.send_message(
-            "تمت إضافة الأغنية إلى قائمة المفضلة لديك! 🤍", ephemeral=True
-        )
-
+        await interaction.response.send_message("تمت إضافة الأغنية إلى قائمة المفضلة لديك! 🤍", ephemeral=True)
 
 class MyBot(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix="!", intents=discord.Intents.all())
 
     async def setup_hook(self):
-        nodes = [
-            wavelink.Node(
-                uri="http://localhost:2333",
-                password=os.getenv("LAVALINK_PASSWORD", "youshallnotpass"),
-            )
-        ]
+        nodes = [wavelink.Node(uri="http://localhost:2333", password="youshallnotpass")]
         await wavelink.Pool.init(nodes=nodes)
 
-
 bot = MyBot()
-
 
 @bot.event
 async def on_ready():
     print(f"Logged in as {bot.user} (Ready to play!)")
-
 
 @bot.command(name="play")
 async def play(ctx: commands.Context, *, search: str):
@@ -78,17 +66,9 @@ async def play(ctx: commands.Context, *, search: str):
 
     track = tracks[0]
     await player.play(track)
-
+    
     view = MusicControlView(player)
-    await ctx.send(
-        f"🎵 **Now Playing**\n`{track.title}`\n\n👇 التحكم في التشغيل عبر الأزرار بالأسفل",
-        view=view,
-    )
+    await ctx.send(f"🎵 **Now Playing**\n`{track.title}`\n\n👇 التحكم في التشغيل عبر الأزرار بالأسفل", view=view)
 
-
-# ضع توكن البوت في متغير البيئة DISCORD_TOKEN ولا تكتبه داخل الملف.
-token = os.getenv("DISCORD_TOKEN")
-if not token:
-    raise RuntimeError("يرجى تعيين متغير البيئة DISCORD_TOKEN قبل تشغيل البوت.")
-
-bot.run(token)
+# تشغيل البوت بالتوكن المباشر
+bot.run("MTU2OTQ3Njg4MTMzMjMxMDA5Nw.GzIoHX.0pm6qGed4T25_dONsS5Lh4aljgDSq_R77_1m7s")
