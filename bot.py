@@ -44,6 +44,7 @@ class MyBot(commands.Bot):
     async def setup_hook(self):
         node = wavelink.Node(uri="https://lavalink.darrennathanael.com:443", password="youshallnotpass")
         await wavelink.Pool.connect(nodes=[node], client=self)
+        print("Connected to Lavalink Node successfully!")
 
 bot = MyBot()
 
@@ -69,12 +70,3 @@ async def play(ctx: commands.Context, *, search: str):
     
     view = MusicControlView(player)
     embed = discord.Embed(
-        title="🎵 Now Playing",
-        description=f"`{track.title}`",
-        color=0x5865F2
-    )
-    embed.set_footer(text=f"Requested by {ctx.author.name}")
-    
-    await ctx.send(embed=embed, view=view)
-
-bot.run(os.getenv("DISCORD_TOKEN"))
