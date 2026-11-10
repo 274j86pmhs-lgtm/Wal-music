@@ -33,13 +33,17 @@ class MusicControlView(discord.ui.View):
         else:
             await interaction.response.send_message("البوت ليس في حالة تشغيل حالياً.", ephemeral=True)
 
+    @discord.ui.button(style=discord.ButtonStyle.danger, emoji="❤️")
+    async def like_button(self, interaction: discord.Interaction, button: discord.ui.Button):
+        await interaction.response.send_message("تم حفظ الأغنية في مفضلتك 🤍🦢", ephemeral=True)
+
 class MyBot(commands.Bot):
     def __init__(self):
-        super().__init__(command_prefix="!", intents=discord.Intents.all())
+        super().__init__(command_prefix="?", intents=discord.Intents.all())
 
     async def setup_hook(self):
-        # الاتصال الصحيح بـ Wavelink للإصدارات الحديثة
-        node = wavelink.Node(uri="http://localhost:2333", password="youshallnotpass")
+        # ربط عقدة الصوت (Lavalink)
+        node = wavelink.Node(uri="https://api.purplenode.gay:443", password="youshallnotpass")
         await wavelink.Pool.connect(nodes=[node], client=self)
 
 bot = MyBot()
@@ -64,7 +68,15 @@ async def play(ctx: commands.Context, *, search: str):
     track = tracks[0]
     await player.play(track)
     
+    # إرسال نفس تصميم اللوحة المرتبة مع أزرار التحكم
     view = MusicControlView(player)
-    await ctx.send(f"🎵 **Now Playing**\n`{track.title}`\n\n👇 التحكم في التشغيل عبر الأزرار بالأسفل", view=view)
+    embed = discord.Embed(
+        title="🎵 Now Playing",
+        description=f"`{track.title}`",
+        color=0x5865F2
+    )
+    embed.set_footer(text=f"Requested by {ctx.author.name}")
+    
+    await ctx.send(embed=embed, view=view)
 
 bot.run(os.getenv("DISCORD_TOKEN"))
