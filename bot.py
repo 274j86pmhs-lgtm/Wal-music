@@ -3,40 +3,6 @@ import discord
 from discord.ext import commands
 import wavelink
 
-class MusicControlView(discord.ui.View):
-    def __init__(self, player):
-        super().__init__(timeout=None)
-        self.player = player
-
-    @discord.ui.button(style=discord.ButtonStyle.success, emoji="▶️")
-    async def resume_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if self.player:
-            await self.player.pause(False)
-            await interaction.response.send_message("تم استئناف التشغيل 🎶", ephemeral=True)
-        else:
-            await interaction.response.send_message("لا يوجد مشغل نشط حالياً.", ephemeral=True)
-
-    @discord.ui.button(style=discord.ButtonStyle.secondary, emoji="⏸️")
-    async def pause_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if self.player:
-            await self.player.pause(True)
-            await interaction.response.send_message("تم إيقاف التشغيل مؤقتاً ⏸️", ephemeral=True)
-        else:
-            await interaction.response.send_message("لا يوجد مشغل نشط حالياً.", ephemeral=True)
-
-    @discord.ui.button(style=discord.ButtonStyle.danger, emoji="⏹️")
-    async def stop_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        if self.player:
-            await self.player.stop()
-            await interaction.message.delete()
-            await interaction.response.send_message("تم إيقاف البوت وخروجه ⏹️", ephemeral=True)
-        else:
-            await interaction.response.send_message("البوت ليس في حالة تشغيل حالياً.", ephemeral=True)
-
-    @discord.ui.button(style=discord.ButtonStyle.danger, emoji="❤️")
-    async def fav_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-        await interaction.response.send_message("تمت إضافة الأغنية إلى قائمة المفضلة لديك! 🤍", ephemeral=True)
-
 class MyBot(commands.Bot):
     def __init__(self):
         super().__init__(command_prefix="!", intents=discord.Intents.all())
@@ -55,20 +21,15 @@ async def on_ready():
 async def play(ctx: commands.Context, *, search: str):
     if not ctx.author.voice:
         return await ctx.send("عليك الدخول إلى روم صوتي أولاً! 🦢")
-
     player = ctx.voice_client
     if not player:
         player = await ctx.author.voice.channel.connect(cls=wavelink.Player)
-
     tracks = await wavelink.Playable.search(search)
     if not tracks:
         return await ctx.send("ما لقيت نتائج لهذه الأغنية!")
-
     track = tracks[0]
     await player.play(track)
-    
-    view = MusicControlView(player)
-    await ctx.send(f"🎵 **Now Playing**\n`{track.title}`\n\n👇 التحكم في التشغيل عبر الأزرار بالأسفل", view=view)
+    await ctx.send(f"🎵 **Now Playing**\n`{track.title}`")
 
-# تشغيل البوت بالتوكن المباشر
-bot.run("MTU2OTQ3Njg4MTMzMjMxMDA5Nw.GzIoHX.0pm6qGed4T25_dONsS5Lh4aljgDSq_R77_1m7s")
+# سحب التوكن بأمان من إعدادات الاستضافة
+bot.run(os.getenv("DISCORD_TOKEN"))
