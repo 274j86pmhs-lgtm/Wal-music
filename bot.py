@@ -42,7 +42,6 @@ class MyBot(commands.Bot):
         super().__init__(command_prefix="?", intents=discord.Intents.all())
 
     async def setup_hook(self):
-        # رابط خادم Lavalink المستقر
         node = wavelink.Node(uri="https://lavalink.darrennathanael.com:443", password="youshallnotpass")
         await wavelink.Pool.connect(nodes=[node], client=self)
 
@@ -52,4 +51,30 @@ bot = MyBot()
 async def on_ready():
     print(f"Logged in as {bot.user} (Ready to play!)")
 
-@bot.command
+@bot.command(name="play")
+async def play(ctx: commands.Context, *, search: str):
+    if not ctx.author.voice:
+        return await ctx.send("عليك الدخول إلى روم صوتي أولاً! 🦢")
+
+    player = ctx.voice_client
+    if not player:
+        player = await ctx.author.voice.channel.connect(cls=wavelink.Player)
+
+    tracks = await wavelink.Playable.search(search)
+    if not tracks:
+        return await ctx.send("ما لقيت نتائج لهذه الأغنية!")
+
+    track = tracks[0]
+    await player.play(track)
+    
+    view = MusicControlView(player)
+    embed = discord.Embed(
+        title="🎵 Now Playing",
+        description=f"`{track.title}`",
+        color=0x5865F2
+    )
+    embed.set_footer(text=f"Requested by {ctx.author.name}")
+    
+    await ctx.send(embed=embed, view=view)
+
+bot.run(os.getenv("DISCORD_TOKEN"))
