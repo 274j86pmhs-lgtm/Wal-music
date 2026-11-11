@@ -35,12 +35,12 @@ ytdl_format_options = {
     'logtostderr': False,
     'quiet': True,
     'no_warnings': True,
-    'default_search': 'ytsearch',
+    'default_search': 'auto',
     'source_address': '0.0.0.0',
     'geo_bypass': True,
     'cookiefile': 'cookies.txt',
-    # --- التعديل النهائي لتجاوز خطأ الصفحة وإعادة التحميل ---
-    'extractor_args': {'youtube': {'player_client': ['android', 'tv']}},
+    # --- التعديل النهائي المباشر لتجاوز الحظر تماماً ---
+    'extractor_args': {'youtube': {'player_client': ['default']}},
 }
 
 ffmpeg_options = {
@@ -54,16 +54,25 @@ class YTDLSource(discord.PCMVolumeTransformer):
     def __init__(self, source, *, data, volume=0.5):
         super().__init__(source, volume)
         self.data = data
-        self.title = data.get('title')
+        self.title = data.get('title', 'Unknown Title')
         self.url = data.get('url')
 
     @classmethod
     async def create_source(cls, search: str, *, loop=None):
         loop = loop or asyncio.get_event_loop()
+        # محاولة البحث واستخراج الرابط بطريقة آمنة
+        if not search.startswith("http"):
+            search = f"ytsearch:{search}"
+            
         data = await loop.run_in_executor(None, lambda: ytdl.extract_info(search, download=False))
         if 'entries' in data:
-            data = data['entries'][0]
-        filename = data['url']
+            # اخذ اول نتيجة صحيحة من البحث
+            for entry in data['entries']:
+                if entry:
+                    data = entry
+                    break
+        
+        filename = data.get('url')
         return cls(discord.FFmpegPCMAudio(filename, **ffmpeg_options), data=data)
 
 class MusicControlView(discord.ui.View):
