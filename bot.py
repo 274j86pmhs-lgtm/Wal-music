@@ -23,11 +23,12 @@ def keep_alive():
     t.daemon = True
     t.start()
 
+# تشغيل الـ Flask في الخلفية أولاً
 keep_alive()
 # ---------------------------------------------
 
 ytdl_format_options = {
-    'format': 'best',  # تعديل جذري لسحب أفضل صيغة متاحة مباشرة بدون تعقيد
+    'format': 'bestaudio/best',
     'noplaylist': True,
     'nocheckcertificate': True,
     'ignoreerrors': False,
@@ -38,6 +39,7 @@ ytdl_format_options = {
     'source_address': '0.0.0.0',
     'geo_bypass': True,
     'cookiefile': 'cookies.txt',
+    'extractor_args': {'youtube': {'player_client': ['mweb']}},
 }
 
 ffmpeg_options = {
