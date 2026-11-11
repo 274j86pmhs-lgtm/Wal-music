@@ -8,7 +8,7 @@ import nacl.utils
 from flask import Flask
 from threading import Thread
 
-# --- إعداد سيرفر الـ Flask الوهمي لإرضاء Fly.io ---
+# --- سيرفر الـ Flask الوهمي لإرضاء Fly.io ومنع مشاكل البورت ---
 app = Flask('')
 
 @app.route('/')
@@ -21,7 +21,7 @@ def run():
 def keep_alive():
     t = Thread(target=run)
     t.start()
-# --------------------------------------------------
+# -------------------------------------------------------------
 
 ytdl_format_options = {
     'format': 'bestaudio/best',
@@ -137,8 +137,8 @@ async def play(ctx: commands.Context, *, search: str):
     
     await ctx.send(embed=embed, view=view)
 
-# --- تشغيل السيرفر الوهمي قبل تشغيل البوت ---
+# --- تشغيل السيرفر الوهمي أولاً ---
 keep_alive()
 
-# تشغيل البوت عبر التوكن المخزن في البيئة
+# --- تشغيل البوت ---
 bot.run(os.getenv("DISCORD_TOKEN"))
