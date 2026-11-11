@@ -26,7 +26,7 @@ def keep_alive():
 keep_alive()
 # ---------------------------------------------
 
-# إعدادات البحث المباشر بالاسم لتجاوز الحظر
+# إعدادات ساوند كلاود لتجاوز حظر يوتيوب نهائياً
 ytdl_format_options = {
     'format': 'bestaudio/best',
     'noplaylist': True,
@@ -35,11 +35,8 @@ ytdl_format_options = {
     'logtostderr': False,
     'quiet': True,
     'no_warnings': True,
-    'default_search': 'ytsearch', # البحث التلقائي بالاسم
+    'default_search': 'scsearch',
     'source_address': '0.0.0.0',
-    'geo_bypass': True,
-    'cookiefile': 'cookies.txt',
-    'extractor_args': {'youtube': {'player_client': ['mweb']}},
 }
 
 ffmpeg_options = {
@@ -60,9 +57,9 @@ class YTDLSource(discord.PCMVolumeTransformer):
     async def create_source(cls, search: str, *, loop=None):
         loop = loop or asyncio.get_event_loop()
         
-        # تجنب استخدام الروابط نهائياً وإجبار البوت على البحث النصي
-        if search.startswith("http://") or search.startswith("https://"):
-            search = f"ytsearch:{search}" # حتى لو حطت رابط بالغلط يحوله بحث
+        # البحث المباشر عبر ساوند كلاود إذا لم يكن رابطاً
+        if not search.startswith("http://") and not search.startswith("https://"):
+            search = f"scsearch:{search}"
             
         data = await loop.run_in_executor(None, lambda: ytdl.extract_info(search, download=False))
         if 'entries' in data:
@@ -144,7 +141,3 @@ async def play(ctx: commands.Context, *, search: str):
     )
     embed.set_footer(text=f"Requested by {ctx.author.name}")
     
-    await ctx.send(embed=embed, view=view)
-
-# --- تشغيل البوت رسمياً ---
-bot.run(os.getenv("DISCORD_TOKEN"))
