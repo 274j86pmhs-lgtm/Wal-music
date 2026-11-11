@@ -2,4 +2,4 @@ app = "wal-music"
 primary_region = "iad"
 
 [build]
-  dockerfile = "Dockerfile"
+  dockerfile = "Dockerfile
