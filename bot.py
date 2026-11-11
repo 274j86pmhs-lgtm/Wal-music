@@ -35,11 +35,11 @@ ytdl_format_options = {
     'logtostderr': False,
     'quiet': True,
     'no_warnings': True,
-    'default_search': 'auto',
+    'default_search': 'ytsearch',
     'source_address': '0.0.0.0',
-    # --- إضافات لتجاوز حظر يوتيوب والبوتات ---
+    # --- إعدادات تجاوز حظر يوتيوب المحدثة ---
     'geo_bypass': True,
-    'extractor_args': {'youtube': {'player_client': ['android', 'web']}},
+    'extractor_args': {'youtube': {'player_client': ['web', 'mweb']}},
 }
 
 ffmpeg_options = {
@@ -59,7 +59,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
     @classmethod
     async def create_source(cls, search: str, *, loop=None):
         loop = loop or asyncio.get_event_loop()
-        data = await loop.run_in_executor(None, lambda: ytdl.extract_info(f"ytsearch:{search}", download=False))
+        data = await loop.run_in_executor(None, lambda: ytdl.extract_info(search, download=False))
         if 'entries' in data:
             data = data['entries'][0]
         filename = data['url']
