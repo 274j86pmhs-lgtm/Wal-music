@@ -6,7 +6,6 @@ import yt_dlp
 # إعدادات yt-dlp لاستخراج الصوت
 ytdl_format_options = {
     'format': 'bestaudio/best',
-    'woo':-1,
     'extractaudio': True,
     'audioformat': 'mp3',
     'outtmpl': '%(extractor)s-%(id)s-%(title)s.%(ext)s',
