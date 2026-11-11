@@ -23,10 +23,10 @@ def keep_alive():
     t.daemon = True
     t.start()
 
-# تشغيل الـ Flask في الخلفية أولاً
 keep_alive()
 # ---------------------------------------------
 
+# إعدادات البحث المباشر بالاسم لتجاوز الحظر
 ytdl_format_options = {
     'format': 'bestaudio/best',
     'noplaylist': True,
@@ -35,7 +35,7 @@ ytdl_format_options = {
     'logtostderr': False,
     'quiet': True,
     'no_warnings': True,
-    'default_search': 'ytsearch',
+    'default_search': 'ytsearch', # البحث التلقائي بالاسم
     'source_address': '0.0.0.0',
     'geo_bypass': True,
     'cookiefile': 'cookies.txt',
@@ -59,6 +59,11 @@ class YTDLSource(discord.PCMVolumeTransformer):
     @classmethod
     async def create_source(cls, search: str, *, loop=None):
         loop = loop or asyncio.get_event_loop()
+        
+        # تجنب استخدام الروابط نهائياً وإجبار البوت على البحث النصي
+        if search.startswith("http://") or search.startswith("https://"):
+            search = f"ytsearch:{search}" # حتى لو حطت رابط بالغلط يحوله بحث
+            
         data = await loop.run_in_executor(None, lambda: ytdl.extract_info(search, download=False))
         if 'entries' in data:
             data = data['entries'][0]
@@ -104,7 +109,7 @@ class MusicControlView(discord.ui.View):
         await interaction.response.send_message("تم حفظ الأغنية في مفضلتك 🤍🦢", ephemeral=True)
 
 class MyBot(commands.Bot):
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         super().__init__(command_prefix="?", intents=discord.Intents.all())
 
 bot = MyBot()
@@ -129,7 +134,7 @@ async def play(ctx: commands.Context, *, search: str):
             player = await YTDLSource.create_source(search, loop=bot.loop)
             ctx.voice_client.play(player, after=lambda e: print(f'Player error: {e}') if e else None)
         except Exception as e:
-            return await ctx.send(f"صار فيه خطأ أثناء تشغيل الأغنية: {e}")
+            return await ctx.send(f"عذراً، صار فيه خطأ أثناء البحث عن الأغنية: {e}")
 
     view = MusicControlView(ctx)
     embed = discord.Embed(
