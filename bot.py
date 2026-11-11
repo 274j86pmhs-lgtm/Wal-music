@@ -35,12 +35,12 @@ ytdl_format_options = {
     'logtostderr': False,
     'quiet': True,
     'no_warnings': True,
-    'default_search': 'auto',
+    'default_search': 'ytsearch',
     'source_address': '0.0.0.0',
     'geo_bypass': True,
     'cookiefile': 'cookies.txt',
-    # --- التعديل النهائي المباشر لتجاوز الحظر تماماً ---
-    'extractor_args': {'youtube': {'player_client': ['default']}},
+    # --- الاعتماد على عميل الجوال لتجاوز حظر الصفحة ---
+    'extractor_args': {'youtube': {'player_client': ['mweb', 'android']}},
 }
 
 ffmpeg_options = {
@@ -60,17 +60,9 @@ class YTDLSource(discord.PCMVolumeTransformer):
     @classmethod
     async def create_source(cls, search: str, *, loop=None):
         loop = loop or asyncio.get_event_loop()
-        # محاولة البحث واستخراج الرابط بطريقة آمنة
-        if not search.startswith("http"):
-            search = f"ytsearch:{search}"
-            
         data = await loop.run_in_executor(None, lambda: ytdl.extract_info(search, download=False))
         if 'entries' in data:
-            # اخذ اول نتيجة صحيحة من البحث
-            for entry in data['entries']:
-                if entry:
-                    data = entry
-                    break
+            data = data['entries'][0]
         
         filename = data.get('url')
         return cls(discord.FFmpegPCMAudio(filename, **ffmpeg_options), data=data)
