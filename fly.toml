@@ -3,9 +3,3 @@ primary_region = "iad"
 
 [build]
   dockerfile = "Dockerfile"
-
-[[services]]
-  protocol = "tcp"
-  internal_port = 8080
-  [[services.ports]]
-    port = 8080
