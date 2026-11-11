@@ -8,7 +8,7 @@ import nacl.utils
 from flask import Flask
 from threading import Thread
 
-# --- سيرفر الـ Flask الوهمي لإرضاء المنصة ومنع مشاكل البورت ---
+# --- سيرفر الـ Flask الوهمي لمنع انطفاء المنصة ---
 app = Flask('')
 
 @app.route('/')
@@ -21,7 +21,7 @@ def run():
 def keep_alive():
     t = Thread(target=run)
     t.start()
-# -------------------------------------------------------------
+# ---------------------------------------------
 
 ytdl_format_options = {
     'format': 'bestaudio',
@@ -33,7 +33,6 @@ ytdl_format_options = {
     'no_warnings': True,
     'default_search': 'ytsearch',
     'source_address': '0.0.0.0',
-    # --- إعدادات تجاوز حظر يوتيوب مع ملف الكوكيز ---
     'geo_bypass': True,
     'cookiefile': 'cookies.txt',
     'extractor_args': {'youtube': {'player_client': ['web', 'mweb']}},
@@ -137,7 +136,7 @@ async def play(ctx: commands.Context, *, search: str):
     
     await ctx.send(embed=embed, view=view)
 
-# --- تشغيل السيرفر الوهمي أولاً ---
+# --- تشغيل السيرفر ---
 keep_alive()
 
 # --- تشغيل البوت ---
