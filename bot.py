@@ -16,7 +16,6 @@ def home():
     return "Bot is alive and running!"
 
 def run():
-    # استخدام بورت Render أو الافتراضي 8080 محلياً
     port = int(os.environ.get("PORT", 8080))
     app.run(host='0.0.0.0', port=port)
 
@@ -28,7 +27,6 @@ def keep_alive():
 keep_alive()
 # ---------------------------------------------
 
-# إعدادات ساوند كلاود لتجاوز حظر يوتيوب نهائياً
 ytdl_format_options = {
     'format': 'bestaudio/best',
     'noplaylist': True,
@@ -43,7 +41,7 @@ ytdl_format_options = {
 
 ffmpeg_options = {
     'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5',
-    'options': '-vn'
+    'options': '-vn -acodec libopus -b:a 96k'
 }
 
 ytdl = yt_dlp.YoutubeDL(ytdl_format_options)
