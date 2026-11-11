@@ -37,8 +37,9 @@ ytdl_format_options = {
     'no_warnings': True,
     'default_search': 'ytsearch',
     'source_address': '0.0.0.0',
-    # --- إعدادات تجاوز حظر يوتيوب المحدثة ---
+    # --- إعدادات تجاوز حظر يوتيوب مع ملف الكوكيز ---
     'geo_bypass': True,
+    'cookiefile': 'cookies.txt',  # ربط ملف الكوكيز اللي رفعناه
     'extractor_args': {'youtube': {'player_client': ['web', 'mweb']}},
 }
 
