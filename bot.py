@@ -8,7 +8,7 @@ import nacl.utils
 from flask import Flask
 from threading import Thread
 
-# --- إعداد سيرفر الـ Flask الوهمي لمنع انطفاء المنصة ---
+# --- إعداد سيرفر الـ Flask مع بورت Render التلقائي ---
 app = Flask('')
 
 @app.route('/')
@@ -16,7 +16,9 @@ def home():
     return "Bot is alive and running!"
 
 def run():
-    app.run(host='0.0.0.0', port=8080)
+    # استخدام بورت Render أو الافتراضي 8080 محلياً
+    port = int(os.environ.get("PORT", 8080))
+    app.run(host='0.0.0.0', port=port)
 
 def keep_alive():
     t = Thread(target=run)
@@ -57,7 +59,6 @@ class YTDLSource(discord.PCMVolumeTransformer):
     async def create_source(cls, search: str, *, loop=None):
         loop = loop or asyncio.get_event_loop()
         
-        # البحث المباشر عبر ساوند كلاود إذا لم يكن رابطاً
         if not search.startswith("http://") and not search.startswith("https://"):
             search = f"scsearch:{search}"
             
@@ -141,3 +142,7 @@ async def play(ctx: commands.Context, *, search: str):
     )
     embed.set_footer(text=f"Requested by {ctx.author.name}")
     
+    await ctx.send(embed=embed, view=view)
+
+# --- تشغيل البوت رسمياً ---
+bot.run(os.getenv("DISCORD_TOKEN"))
