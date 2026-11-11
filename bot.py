@@ -8,7 +8,7 @@ import nacl.utils
 from flask import Flask
 from threading import Thread
 
-# --- سيرفر الـ Flask الوهمي لإرضاء Fly.io ومنع مشاكل البورت ---
+# --- سيرفر الـ Flask الوهمي لإرضاء المنصة ومنع مشاكل البورت ---
 app = Flask('')
 
 @app.route('/')
@@ -36,7 +36,10 @@ ytdl_format_options = {
     'quiet': True,
     'no_warnings': True,
     'default_search': 'auto',
-    'source_address': '0.0.0.0'
+    'source_address': '0.0.0.0',
+    # --- إضافات لتجاوز حظر يوتيوب والبوتات ---
+    'geo_bypass': True,
+    'extractor_args': {'youtube': {'player_client': ['android', 'web']}},
 }
 
 ffmpeg_options = {
