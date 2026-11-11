@@ -146,3 +146,4 @@ keep_alive()
 
 # --- تشغيل البوت ---
 bot.run(os.getenv("DISCORD_TOKEN"))
+
