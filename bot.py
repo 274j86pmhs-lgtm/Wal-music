@@ -1,9 +1,27 @@
 import os
+import asyncio
 import discord
 from discord.ext import commands
 import yt_dlp
 import nacl.secret
 import nacl.utils
+from flask import Flask
+from threading import Thread
+
+# --- إعداد سيرفر الـ Flask الوهمي لإرضاء Fly.io ---
+app = Flask('')
+
+@app.route('/')
+def home():
+    return "Bot is alive and running!"
+
+def run():
+    app.run(host='0.0.0.0', port=8080)
+
+def keep_alive():
+    t = Thread(target=run)
+    t.start()
+# --------------------------------------------------
 
 ytdl_format_options = {
     'format': 'bestaudio/best',
@@ -69,7 +87,10 @@ class MusicControlView(discord.ui.View):
     async def stop_button(self, interaction: discord.Interaction, button: discord.ui.Button):
         if self.ctx.voice_client:
             await self.ctx.voice_client.disconnect()
-            await interaction.message.delete()
+            try:
+                await interaction.message.delete()
+            except:
+                pass
             await interaction.response.send_message("تم إيقاف البوت وخروجه ⏹️", ephemeral=True)
         else:
             await interaction.response.send_message("البوت ليس في روم صوتي.", ephemeral=True)
@@ -87,8 +108,6 @@ bot = MyBot()
 @bot.event
 async def on_ready():
     print(f"Logged in as {bot.user} (Ready to play!)")
-
-import asyncio
 
 @bot.command(name="play")
 async def play(ctx: commands.Context, *, search: str):
@@ -118,4 +137,8 @@ async def play(ctx: commands.Context, *, search: str):
     
     await ctx.send(embed=embed, view=view)
 
+# --- تشغيل السيرفر الوهمي قبل تشغيل البوت ---
+keep_alive()
+
+# تشغيل البوت عبر التوكن المخزن في البيئة
 bot.run(os.getenv("DISCORD_TOKEN"))
