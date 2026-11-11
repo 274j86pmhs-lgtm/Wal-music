@@ -39,7 +39,8 @@ ytdl_format_options = {
     'source_address': '0.0.0.0',
     'geo_bypass': True,
     'cookiefile': 'cookies.txt',
-    'extractor_args': {'youtube': {'player_client': ['tv']}},
+    # --- التعديل النهائي لتجاوز خطأ الصفحة وإعادة التحميل ---
+    'extractor_args': {'youtube': {'player_client': ['android', 'tv']}},
 }
 
 ffmpeg_options = {
