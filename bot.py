@@ -24,11 +24,7 @@ def keep_alive():
 # -------------------------------------------------------------
 
 ytdl_format_options = {
-    'format': 'bestaudio/best',
-    'extractaudio': True,
-    'audioformat': 'mp3',
-    'outtmpl': '%(extractor)s-%(id)s-%(title)s.%(ext)s',
-    'restrictfilenames': True,
+    'format': 'bestaudio',
     'noplaylist': True,
     'nocheckcertificate': True,
     'ignoreerrors': False,
@@ -39,7 +35,7 @@ ytdl_format_options = {
     'source_address': '0.0.0.0',
     # --- إعدادات تجاوز حظر يوتيوب مع ملف الكوكيز ---
     'geo_bypass': True,
-    'cookiefile': 'cookies.txt',  # ربط ملف الكوكيز اللي رفعناه
+    'cookiefile': 'cookies.txt',
     'extractor_args': {'youtube': {'player_client': ['web', 'mweb']}},
 }
 
@@ -146,4 +142,3 @@ keep_alive()
 
 # --- تشغيل البوت ---
 bot.run(os.getenv("DISCORD_TOKEN"))
-
