@@ -24,7 +24,7 @@ def keep_alive():
 # ---------------------------------------------
 
 ytdl_format_options = {
-    'format': 'bestaudio',
+    'format': 'bestaudio/best',
     'noplaylist': True,
     'nocheckcertificate': True,
     'ignoreerrors': False,
@@ -35,7 +35,8 @@ ytdl_format_options = {
     'source_address': '0.0.0.0',
     'geo_bypass': True,
     'cookiefile': 'cookies.txt',
-    'extractor_args': {'youtube': {'player_client': ['web', 'mweb']}},
+    # --- التعديل الجذري الجديد لتجاوز حظر يوتيوب والصيغ ---
+    'extractor_args': {'youtube': {'player_client': ['android', 'web']}},
 }
 
 ffmpeg_options = {
@@ -124,20 +125,3 @@ async def play(ctx: commands.Context, *, search: str):
             player = await YTDLSource.create_source(search, loop=bot.loop)
             ctx.voice_client.play(player, after=lambda e: print(f'Player error: {e}') if e else None)
         except Exception as e:
-            return await ctx.send(f"صار فيه خطأ أثناء تشغيل الأغنية: {e}")
-
-    view = MusicControlView(ctx)
-    embed = discord.Embed(
-        title="🎵 Now Playing",
-        description=f"`{player.title}`",
-        color=0x5865F2
-    )
-    embed.set_footer(text=f"Requested by {ctx.author.name}")
-    
-    await ctx.send(embed=embed, view=view)
-
-# --- تشغيل السيرفر ---
-keep_alive()
-
-# --- تشغيل البوت ---
-bot.run(os.getenv("DISCORD_TOKEN"))
