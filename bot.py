@@ -2,8 +2,8 @@ import os
 import discord
 from discord.ext import commands
 import yt_dlp
+import nacl
 
-# إعدادات yt-dlp لاستخراج الصوت
 ytdl_format_options = {
     'format': 'bestaudio/best',
     'extractaudio': True,
