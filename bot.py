@@ -8,7 +8,7 @@ import nacl.utils
 from flask import Flask
 from threading import Thread
 
-# --- سيرفر الـ Flask الوهمي لمنع انطفاء المنصة ---
+# --- إعداد سيرفر الـ Flask الوهمي لمنع انطفاء المنصة ---
 app = Flask('')
 
 @app.route('/')
@@ -20,7 +20,11 @@ def run():
 
 def keep_alive():
     t = Thread(target=run)
+    t.daemon = True
     t.start()
+
+# تشغيل الـ Flask في الخلفية أولاً
+keep_alive()
 # ---------------------------------------------
 
 ytdl_format_options = {
@@ -35,7 +39,6 @@ ytdl_format_options = {
     'source_address': '0.0.0.0',
     'geo_bypass': True,
     'cookiefile': 'cookies.txt',
-    # --- التعديل القوي لتجاوز حظر يوتيوب عبر عميل التلفزيون ---
     'extractor_args': {'youtube': {'player_client': ['tv']}},
 }
 
@@ -137,7 +140,5 @@ async def play(ctx: commands.Context, *, search: str):
     
     await ctx.send(embed=embed, view=view)
 
-# --- تشغيل السيرفر ---
-keep_alive()
-
-# --- تش
+# --- تشغيل البوت رسمياً ---
+bot.run(os.getenv("DISCORD_TOKEN"))
