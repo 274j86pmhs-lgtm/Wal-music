@@ -2,4 +2,11 @@ app = "wal-music"
 primary_region = "iad"
 
 [build]
-  dockerfile = "Dockerfile
+  dockerfile = "Dockerfile"
+
+[http_service]
+  internal_port = 0
+  force_https = false
+  auto_stop_machines = false
+  auto_start_machines = true
+  min_machines_running = 0
